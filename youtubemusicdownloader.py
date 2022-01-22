@@ -2,6 +2,7 @@ from queue import Empty
 from types import NoneType
 from ytmusicapi import YTMusic
 import json
+import yt_dlp
 
 ytmusic = YTMusic('headers_auth.json')
 playlistidinput = input('Insert a YouTube Music album playlist ID: ')
@@ -36,4 +37,11 @@ for i in range(albumtotaltracks):
     json_object = json.loads(json_dump)
     arrayTratado.append(json_object)
     print(str(i + 1) + " - " + json_object['artists'] + " - " + json_object['title'])
-print(arrayTratado[8]['artists'])
+print('\nDownloading album...')
+ydl_opts = {
+    'format': '141/140',
+    'cookiefile': 'cookies.txt',
+    'outtmpl': '%(playlist_index)s.m4a'
+}
+with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    ydl.download(['https://music.youtube.com/playlist?list=' + playlistidinput])
