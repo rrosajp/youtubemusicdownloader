@@ -3,6 +3,7 @@ from types import NoneType
 from ytmusicapi import YTMusic
 import json
 import yt_dlp
+from mutagen.mp4 import MP4
 
 ytmusic = YTMusic('headers_auth.json')
 playlistidinput = input('Insert a YouTube Music album playlist ID: ')
@@ -48,3 +49,12 @@ ydl_opts = {
 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
     ydl.download(['https://music.youtube.com/playlist?list=' + playlistidinput])
 print('\nAdding tags...\n')
+for a in range(albumtotaltracks):
+    tags = MP4(str(a + 1) + '.m4a').tags
+    tags['\xa9alb'] = albumname
+    tags.save(str(a + 1) + '.m4a')
+for a in range(albumtotaltracks):
+    tags = MP4(str(a + 1) + '.m4a').tagss
+    tags['trkn'] = albumtotaltracks
+    tags.save(str(a + 1) + '.m4a')
+    
