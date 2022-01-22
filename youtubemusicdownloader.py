@@ -1,29 +1,15 @@
+from queue import Empty
+from types import NoneType
 from ytmusicapi import YTMusic
-import yt_dlp
 
 ytmusic = YTMusic('headers_auth.json')
-search = input("insira um link ou pesquise por algo: ")
-result = ytmusic.search(search, filter = 'albums')
-print("\n1:")
-print("nome do album: " + result[0]["title"])
-print("nome do artista: " + result[0]["artists"][0]["name"])
-browseid1 = result[0]["browseId"]
-print("\n2:")
-print("nome do album: " + result[1]["title"])
-print("nome do artista: " + result[1]["artists"][0]["name"])
-browseid2 = result[1]["browseId"]
-print("\n3:")
-print("nome do album: " + result[2]["title"])
-print("nome do artista: " + result[2]["artists"][0]["name"])
-browseid3 = result[2]["browseId"]
-choice = int(input("\ninsira qual opção tu quer: "))
-while choice > 3 or choice < 0:
-    choice = int(input("opção inexistente. insira qual dos álbuns tu quer: "))
-if choice == 1:
-    browseid = browseid1
-if choice == 2:
-    browseid = browseid2
-    print("maneiro")
-if choice == 3:
-    browseid = browseid3
-print("ganhaste")
+playlistidinput = input('Insert a YouTube Music album playlist ID: ')
+albumid = ytmusic.get_album_browse_id(playlistidinput)
+while albumid is None:
+    playlistidinput = input('Invalid playlist ID. Insert a YouTube Music album playlist ID: ')
+    albumid = ytmusic.get_album_browse_id(playlistidinput)
+albuminfo = ytmusic.get_album(albumid)
+print("Album name: " + albuminfo['title'])
+print("Album artist name: " + albuminfo['artists'][0]['name'])
+print("Album year: " + albuminfo['year'])
+print("Album total track(s): " + str(albuminfo['trackCount']))
