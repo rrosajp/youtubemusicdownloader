@@ -13,7 +13,7 @@ while albumid is None:
     albumid = ytmusic.get_album_browse_id(playlistidinput)
 albuminfo = ytmusic.get_album(albumid)
 albumname = albuminfo['title']
-albumartistname = albuminfo['artists'][0]['name']
+albumartist = albuminfo['artists'][0]['name']
 albumyear = albuminfo['year']
 albumtotaltracks = albuminfo['trackCount']
 albumduration = albuminfo['duration']
@@ -21,7 +21,7 @@ albumtrackinfo = albuminfo['tracks']
 albumcover = albuminfo['thumbnails'][0]['url'][:-15] + '=w1024-h1024-l90-rj'
 print("\nAlbum info:")
 print("\nName: " + albumname)
-print("Artist: " + albumartistname)
+print("Artist: " + albumartist)
 print("Year: " + albumyear)
 print("Total track(s): " + str(albumtotaltracks))
 print("Duration: " + albumduration)
@@ -31,7 +31,7 @@ print("Album tracklist (Track number/Artist/Title/Explicit):\n")
 for i in range(albumtotaltracks):
     albumtrackartist = ''
     if albumtrackinfo[0]['artists'] == None:
-        albumtrackartist = albumartistname
+        albumtrackartist = albumartist
     else:
         albumtrackartist = albumtrackinfo[i]['artists'][0]['name']
     dataSetTrack = { 'title': albumtrackinfo[i]['title'],  'artists': albumtrackartist
@@ -51,10 +51,10 @@ with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 print('\nAdding tags...\n')
 for a in range(albumtotaltracks):
     tags = MP4(str(a + 1) + '.m4a').tags
+    tags['\xa9nam'] = arrayTratado[a]['title']
     tags['\xa9alb'] = albumname
+    tags['aART'] = albumartist
+    tags['\xa9day'] = albumyear
+    tags['\xa9ART'] = arrayTratado[a]['artists']
+    tags['trkn'] = str(albumtotaltracks)
     tags.save(str(a + 1) + '.m4a')
-for a in range(albumtotaltracks):
-    tags = MP4(str(a + 1) + '.m4a').tagss
-    tags['trkn'] = albumtotaltracks
-    tags.save(str(a + 1) + '.m4a')
-    
