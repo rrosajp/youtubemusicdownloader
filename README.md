@@ -1,7 +1,7 @@
 # Youtube Album Downloader
-This downloader has been made for downloading an entire playlist/album from Youtube Music, **at high quality**, and then applying the Youtube Music's API metadata on the tag of the files.
+This script downloads entire YouTube Music albums by prodividing a link and tags and files them using YouTube Music API. By default, it will download tracks at AAC 128k, but it can also do AAC 256k if a YouTube Music Premium cookies.txt is placed at the same directory as this script.
 
-### Download quality
-Music will be download on the .m4a container, at the highest quality possible, that can be:
-* **141**: 256kbps audio, you need to generate a 'cookie.txt' of a Youtube Premium logged session to be able to trigger this download.
-* **140**: 128kbps audio, no need for authentication.
+### Requirements
+    pip install yt_dlp mutagen
+    
+Special thanks to Patrick Timm for helping me out in this project.
