@@ -3,6 +3,9 @@ This script downloads entire YouTube Music albums by prodividing a link and tags
 
 ### Requirements
     pip install yt_dlp mutagen ytmusicapi
-You will also need ffmpeg install in your system.
+You will also need ffmpeg installed in your system.
+
+### Know issues
+* It can't download tracks that exceeds the Windows file length limit. The current workaround is to run the script on WSL.
     
 Special thanks to Patrick Timm for helping me out in this project.
