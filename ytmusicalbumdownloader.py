@@ -118,8 +118,11 @@ for i in range(len(albumTrackPosition)):
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download('https://music.youtube.com/playlist?list=' + playlistLinkInput)
                 downloadInfo = ydl.extract_info('https://music.youtube.com/playlist?list=' + playlistLinkInput, download=False)
-            getAlbumTrackLyricsId = ytmusic.get_watch_playlist(downloadInfo['entries'][0]['display_id'])
-            albumTrackLyrics = ytmusic.get_lyrics(getAlbumTrackLyricsId['lyrics'])
+            albumTrackLyricsId = ytmusic.get_watch_playlist(downloadInfo['entries'][0]['display_id'])
+            if albumTrackLyricsId['lyrics'] is None:
+                i += 0
+            else:
+                albumTrackLyrics = ytmusic.get_lyrics(albumTrackLyricsId['lyrics'])
             print('Done!')
             tags = MP4('YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a').tags
             tags['\xa9nam'] = albumTrackName[i]
@@ -132,8 +135,10 @@ for i in range(len(albumTrackPosition)):
                 tags["covr"] = [
                 MP4Cover(cover.read(), imageformat=MP4Cover.FORMAT_JPEG)
             ]
-            tags.save('YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a')
-            tags['\xa9lyr'] = albumTrackLyrics['lyrics']
+            if albumTrackLyricsId['lyrics'] is None:
+                i += 0
+            else:
+                tags['\xa9lyr'] = albumTrackLyrics['lyrics']
             tags.save('YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a')
         except:
             pass
