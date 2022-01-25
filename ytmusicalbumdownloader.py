@@ -3,6 +3,7 @@ from ytmusicapi import YTMusic
 import yt_dlp
 from mutagen.mp4 import MP4, MP4Cover
 import urllib.request
+import os
 
 # ask user input
 ytmusic = YTMusic()
@@ -102,27 +103,30 @@ urllib.request.urlretrieve(albumCoverUrl, 'Cover.jpg')
 
 # start downloading
 for i in range(len(albumTrackPosition)):
-    try:
-        ydl_opts = {
-        'format': '141/140',
-        'cookiefile': 'cookies.txt',
-        'outtmpl': 'YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a',
-        'playliststart': i + 1,
-        'playlistend': i + 1
-        }
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download('https://music.youtube.com/playlist?list=' + playlistLinkInput)
-        tags = MP4('YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a').tags
-        tags['\xa9nam'] = albumTrackName[i]
-        tags['\xa9alb'] = albumName[0]
-        tags['aART'] = albumArtist[0]
-        tags['\xa9day'] = albumRawInfo['year']
-        tags['\xa9ART'] = albumTrackArtist[i]
-        tags['trkn'] = [(i + 1, albumRawInfo['trackCount'])]
-        with open('Cover.jpg', "rb") as cover:
-            tags["covr"] = [
-            MP4Cover(cover.read(), imageformat=MP4Cover.FORMAT_JPEG)
-        ]
-        tags.save('YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a')
-    except:
+    if os.path.exists('YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a') == True:
         pass
+    else:
+        try:
+            ydl_opts = {
+            'format': '141/140',
+            'cookiefile': 'cookies.txt',
+            'outtmpl': 'YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a',
+            'playliststart': i + 1,
+            'playlistend': i + 1
+            }
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download('https://music.youtube.com/playlist?list=' + playlistLinkInput)
+            tags = MP4('YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a').tags
+            tags['\xa9nam'] = albumTrackName[i]
+            tags['\xa9alb'] = albumName[0]
+            tags['aART'] = albumArtist[0]
+            tags['\xa9day'] = albumRawInfo['year']
+            tags['\xa9ART'] = albumTrackArtist[i]
+            tags['trkn'] = [(i + 1, albumRawInfo['trackCount'])]
+            with open('Cover.jpg', "rb") as cover:
+                tags["covr"] = [
+                MP4Cover(cover.read(), imageformat=MP4Cover.FORMAT_JPEG)
+            ]
+            tags.save('YouTube Music/' + albumArtistFixed[0] + '/' + albumNameFixed[0] + '/' + str(albumTrackPosition[i]) + ' ' + albumTrackNameFixed[i] + '.m4a')
+        except:
+            pass
