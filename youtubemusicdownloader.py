@@ -105,12 +105,12 @@ if downloadDetails[1] == 'trackDownload':
             trackName = [albumInfo["tracks"][i]["title"]]
             trackNameFixed = [albumInfo["tracks"][i]["title"]]
             break
-    trackLyricsId = ytmusic.get_lyrics(downloadDetails[5])
-    if trackLyricsId == None:
-        trackLyrics = [None]
-    else:
+    try:
+        trackLyricsId = ytmusic.get_lyrics(downloadDetails[5])
         trackLyrics = [trackLyricsId["lyrics"]]
-
+    except:
+        trackLyrics = [None]
+    
 # fetch tags for album
 if downloadDetails[1] == "albumDownload":
     albumInfo = ytmusic.get_album(downloadDetails[2])
@@ -142,13 +142,13 @@ if downloadDetails[1] == "albumDownload":
     for i in range(len(playlistInfo["entries"])):
         trackVideoId.append(playlistInfo["entries"][i]["id"])
     for i in range(len(trackVideoId)):
-        trackWatchList.append(ytmusic.get_watch_playlist(trackVideoId[i]))
-        trackLyricsId.append(trackWatchList[i]["lyrics"])
-        if trackLyricsId[i] is None:
+        try:
+            trackWatchList.append(ytmusic.get_watch_playlist(trackVideoId[i]))
+            trackLyricsId.append(trackWatchList[i]["lyrics"])
+            trackLyricsInfo.append(ytmusic.get_lyrics(trackLyricsId[i]))
+            trackLyrics.append(trackLyricsInfo[i]["lyrics"])
+        except:
             trackLyrics.append(None)
-            continue
-        trackLyricsInfo.append(ytmusic.get_lyrics(trackLyricsId[i]))
-        trackLyrics.append(trackLyricsInfo[i]["lyrics"])
 
 # fetch tags for playlist
 if downloadDetails[1] == 'playlistDownload':
@@ -177,13 +177,13 @@ if downloadDetails[1] == 'playlistDownload':
                 trackNameFixed.append(albumPlaylistDetails[i]["entries"][j]["title"])
                 trackNumber.append(j + 1)
                 trackNumberFixed.append("%02d" % (j + 1))
-        trackWatchList.append(ytmusic.get_watch_playlist(trackVideoId[i]))
-        trackLyricsId.append(trackWatchList[i]["lyrics"])
-        if trackLyricsId[i] is None:
+        try:
+            trackWatchList.append(ytmusic.get_watch_playlist(trackVideoId[i]))
+            trackLyricsId.append(trackWatchList[i]["lyrics"])
+            trackLyricsInfo.append(ytmusic.get_lyrics(trackLyricsId[i]))
+            trackLyrics.append(trackLyricsInfo[i]["lyrics"])
+        except:
             trackLyrics.append(None)
-            continue
-        trackLyricsInfo.append(ytmusic.get_lyrics(trackLyricsId[i]))
-        trackLyrics.append(trackLyricsInfo[i]["lyrics"])
 
 # remove illegal characters
 for i in range(len(trackName)):
