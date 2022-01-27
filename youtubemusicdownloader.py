@@ -74,8 +74,6 @@ trackName = []
 trackNameFixed = []
 trackVideoId = []
 trackLyrics = []
-trackLyricsId = []
-trackLyricsInfo = []
 trackWatchList = []
 foundTrackNumber = 0
 
@@ -142,13 +140,13 @@ if downloadDetails[1] == "albumDownload":
     for i in range(len(playlistInfo["entries"])):
         trackVideoId.append(playlistInfo["entries"][i]["id"])
     for i in range(len(trackVideoId)):
-        try:
-            trackWatchList.append(ytmusic.get_watch_playlist(trackVideoId[i]))
-            trackLyricsId.append(trackWatchList[i]["lyrics"])
-            trackLyricsInfo.append(ytmusic.get_lyrics(trackLyricsId[i]))
-            trackLyrics.append(trackLyricsInfo[i]["lyrics"])
-        except:
+        trackWatchList = ytmusic.get_watch_playlist(trackVideoId[i])
+        trackLyricsId = trackWatchList["lyrics"]
+        if trackLyricsId == None:
             trackLyrics.append(None)
+        else:
+            trackLyricsInfo = ytmusic.get_lyrics(trackLyricsId)
+            trackLyrics.append(trackLyricsInfo["lyrics"])
 
 # fetch tags for playlist
 if downloadDetails[1] == 'playlistDownload':
@@ -177,13 +175,14 @@ if downloadDetails[1] == 'playlistDownload':
                 trackNameFixed.append(albumPlaylistDetails[i]["entries"][j]["title"])
                 trackNumber.append(j + 1)
                 trackNumberFixed.append("%02d" % (j + 1))
-        try:
-            trackWatchList.append(ytmusic.get_watch_playlist(trackVideoId[i]))
-            trackLyricsId.append(trackWatchList[i]["lyrics"])
-            trackLyricsInfo.append(ytmusic.get_lyrics(trackLyricsId[i]))
-            trackLyrics.append(trackLyricsInfo[i]["lyrics"])
-        except:
+    for i in range(len(trackVideoId)):
+        trackWatchList = ytmusic.get_watch_playlist(trackVideoId[i])
+        trackLyricsId = trackWatchList["lyrics"]
+        if trackLyricsId == None:
             trackLyrics.append(None)
+        else:
+            trackLyricsInfo = ytmusic.get_lyrics(trackLyricsId)
+            trackLyrics.append(trackLyricsInfo["lyrics"])
 
 # remove illegal characters
 for i in range(len(trackName)):
