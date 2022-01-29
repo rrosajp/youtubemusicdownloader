@@ -195,6 +195,9 @@ for i in range(len(trackName)):
     trackNameFixed[i] = trackNameFixed[i].replace('<', '_')
     trackNameFixed[i] = trackNameFixed[i].replace('>', '_')
     trackNameFixed[i] = trackNameFixed[i].replace('|', '_')
+    if trackNameFixed[i].endswith(".") == True:
+        trackNameFixed[i] = trackNameFixed[i].replace('.', '_')
+
 
 for i in range(len(albumArtist)):
     albumArtistFixed[i] = albumArtistFixed[i].replace('\\', '_')
@@ -206,6 +209,8 @@ for i in range(len(albumArtist)):
     albumArtistFixed[i] = albumArtistFixed[i].replace('<', '_')
     albumArtistFixed[i] = albumArtistFixed[i].replace('>', '_')
     albumArtistFixed[i] = albumArtistFixed[i].replace('|', '_')
+    if albumArtistFixed[i].endswith(".") == True:
+        albumArtistFixed[i] = albumArtistFixed[i].replace('.', '_')
 
 for i in range(len(albumName)):
     albumNameFixed[i] = albumNameFixed[i].replace('\\', '_')
@@ -217,11 +222,14 @@ for i in range(len(albumName)):
     albumNameFixed[i] = albumNameFixed[i].replace('<', '_')
     albumNameFixed[i] = albumNameFixed[i].replace('>', '_')
     albumNameFixed[i] = albumNameFixed[i].replace('|', '_')
+    if albumNameFixed[i].endswith(".") == True:
+        albumNameFixed[i] = albumNameFixed[i].replace('.', '_')
 
 # start downloading
 for i in range(len(trackName)):
     try:
         print("Downloading " + trackName[i] + " (Track " + str(i + 1) + " of " + str(len(trackName)) + ")...")
+        print(albumNameFixed[i])
         urllib.request.urlretrieve(albumCoverUrl[i], 'Cover.jpg')
         ydl_opts = {
             'format': '141/140',
