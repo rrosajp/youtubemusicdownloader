@@ -6,6 +6,8 @@ import urllib.request
 import os
 import re
 
+currentDirectory = os.getcwd()
+
 ytmusic = YTMusic()
 
 # link check
@@ -229,31 +231,30 @@ for i in range(len(albumName)):
 for i in range(len(trackName)):
     try:
         print("Downloading " + trackName[i] + " (Track " + str(i + 1) + " of " + str(len(trackName)) + ")...")
-        print(albumNameFixed[i])
-        urllib.request.urlretrieve(albumCoverUrl[i], 'Cover.jpg')
+        urllib.request.urlretrieve(albumCoverUrl[i], "\\\\?\\" + currentDirectory + "\\Cover.jpg")
         ydl_opts = {
             'format': '141/140',
-            'cookiefile': 'cookies.txt',
-            'outtmpl': 'YouTube Music/' + albumArtistFixed[i] + '/' + albumNameFixed[i] + '/' + str(trackNumberFixed[i]) + ' ' + trackNameFixed[i] + '.m4a',
+            'cookiefile': "\\\\?\\" + currentDirectory + "\\cookies.txt",
+            'outtmpl': "\\\\?\\" + currentDirectory + "\\YouTube Music\\" + albumArtistFixed[i] + "\\" + albumNameFixed[i] + "\\" + str(trackNumberFixed[i]) + " " + trackNameFixed[i] + ".m4a",
             'quiet': True,
             "no_warnings": True
             }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download('https://music.youtube.com/watch?v=' + trackVideoId[i])
-        tags = MP4('YouTube Music/' + albumArtistFixed[i] + '/' + albumNameFixed[i] + '/' + str(trackNumberFixed[i]) + ' ' + trackNameFixed[i] + '.m4a').tags
+        tags = MP4("\\\\?\\" + currentDirectory + "\\YouTube Music\\" + albumArtistFixed[i] + "\\" + albumNameFixed[i] + "\\" + str(trackNumberFixed[i]) + " " + trackNameFixed[i] + ".m4a").tags
         tags['\xa9nam'] = trackName[i]
         tags['\xa9alb'] = albumName[i]
         tags['aART'] = albumArtist[i]
         tags['\xa9day'] = albumYear[i]
         tags['\xa9ART'] = trackArtist[i]
         tags['trkn'] = [(trackNumber[i], albumTotalTracks[i])]
-        with open('Cover.jpg', "rb") as cover:
+        with open("\\\\?\\" + currentDirectory + "\\Cover.jpg", "rb") as cover:
             tags["covr"] = [
             MP4Cover(cover.read(), imageformat=MP4Cover.FORMAT_JPEG)
             ]
         if trackLyrics[i] != None:
             tags['\xa9lyr'] = trackLyrics[i]
-        tags.save('YouTube Music/' + albumArtistFixed[i] + '/' + albumNameFixed[i] + '/' + str(trackNumberFixed[i]) + ' ' + trackNameFixed[i] + '.m4a')
+        tags.save("\\\\?\\" + currentDirectory + "\\YouTube Music\\" + albumArtistFixed[i] + "\\" + albumNameFixed[i] + "\\" + str(trackNumberFixed[i]) + " " + trackNameFixed[i] + ".m4a")
         print("Done!")
     except KeyboardInterrupt:
         break
