@@ -5,4 +5,7 @@ A simple Python script to download YouTube Music playlists, albums or tracks by 
     pip install yt_dlp mutagen ytmusicapi
 You will also need ffmpeg installed in your system.
 
+### Usage
+    python youtubemusicdownload "(link)"    (Support multiple link inputs)
+
 Special thanks to Patrick Timm for helping me out in this project.
