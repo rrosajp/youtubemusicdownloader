@@ -78,6 +78,7 @@ trackVideoId = []
 trackLyrics = []
 trackWatchList = []
 foundTrackNumber = 0
+trackRating = []
 
 # fectch tags for single track
 if downloadDetails[1] == 'trackDownload':
@@ -104,6 +105,10 @@ if downloadDetails[1] == 'trackDownload':
             trackNumberFixed = ["%02d" % (i + 1)]
             trackName = [albumInfo["tracks"][i]["title"]]
             trackNameFixed = [albumInfo["tracks"][i]["title"]]
+            if albumInfo["tracks"][i]["isExplicit"] == True:
+                trackRating = [4]
+            else:
+                trackRating = [0]
             break
     try:
         trackLyricsId = ytmusic.get_lyrics(downloadDetails[5])
@@ -130,6 +135,10 @@ if downloadDetails[1] == "albumDownload":
         trackNumberFixed.append("%02d" % (i + 1))
         trackName.append(albumInfo["tracks"][i]["title"])
         trackNameFixed.append(albumInfo["tracks"][i]["title"])
+        if albumInfo["tracks"][i]["isExplicit"] == True:
+            trackRating.append(4)
+        else:
+            trackRating.append(0)
 
     ydl_opts = {
     "extract_flat": True,
@@ -177,6 +186,10 @@ if downloadDetails[1] == 'playlistDownload':
                 trackNameFixed.append(albumPlaylistDetails[i]["entries"][j]["title"])
                 trackNumber.append(j + 1)
                 trackNumberFixed.append("%02d" % (j + 1))
+                if albumInfo[i]["tracks"][j]["isExplicit"] == True:
+                    trackRating.append(4)
+                else:
+                    trackRating.append(0)
     for i in range(len(trackVideoId)):
         trackWatchList = ytmusic.get_watch_playlist(trackVideoId[i])
         trackLyricsId = trackWatchList["lyrics"]
@@ -248,6 +261,7 @@ for i in range(len(trackName)):
         tags['\xa9day'] = albumYear[i]
         tags['\xa9ART'] = trackArtist[i]
         tags['trkn'] = [(trackNumber[i], albumTotalTracks[i])]
+        tags['rtng'] = [trackRating[i]]
         with open("\\\\?\\" + currentDirectory + "\\Cover.jpg", "rb") as cover:
             tags["covr"] = [
             MP4Cover(cover.read(), imageformat=MP4Cover.FORMAT_JPEG)
