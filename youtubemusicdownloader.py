@@ -210,8 +210,6 @@ for i in range(len(trackName)):
     trackNameFixed[i] = trackNameFixed[i].replace('<', '_')
     trackNameFixed[i] = trackNameFixed[i].replace('>', '_')
     trackNameFixed[i] = trackNameFixed[i].replace('|', '_')
-    if trackNameFixed[i].endswith(".") == True:
-        trackNameFixed[i] = trackNameFixed[i].replace('.', '_')
 
 
 for i in range(len(albumArtist)):
