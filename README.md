@@ -8,6 +8,6 @@ Tags (album artist, album cover, album name, album track count, album year, trac
 You will also need ffmpeg installed in your system.
 
 ### Usage
-    python youtubemusicdownload.py "(link)"    (Support multiple entries)
+    python youtubemusicdownloader.py "(link)"    (Support multiple entries)
 
 Special thanks to Patrick Timm for helping me out in this project.
