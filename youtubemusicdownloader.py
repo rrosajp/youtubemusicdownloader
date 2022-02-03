@@ -6,8 +6,12 @@ import urllib.request
 import os
 import re
 import sys
+import platform
 
-currentDirectory = os.getcwd()
+if platform.system() == "Windows":
+    currentDirectory = "\\\\?\\" + os.getcwd()
+else:
+    currentDirectory = os.getcwd()
 
 linkInput = sys.argv
 if len(linkInput) == 1:
@@ -245,17 +249,17 @@ for i in range(len(linkInput)):
         for i in range(len(trackName)):
             try:
                 print("Downloading " + trackName[i] + " (Track " + str(i + 1) + " of " + str(len(trackName)) + ")...")
-                urllib.request.urlretrieve(albumCoverUrl[i], "\\\\?\\" + currentDirectory + "\\Cover.jpg")
+                urllib.request.urlretrieve(albumCoverUrl[i], currentDirectory + "\\Cover.jpg")
                 ydl_opts = {
                     'format': '141/140',
-                    'cookiefile': "\\\\?\\" + currentDirectory + "\\cookies.txt",
-                    'outtmpl': "\\\\?\\" + currentDirectory + "\\YouTube Music\\" + albumArtistFixed[i] + "\\" + albumNameFixed[i] + "\\" + str(trackNumberFixed[i]) + " " + trackNameFixed[i] + ".m4a",
+                    'cookiefile': currentDirectory + "\\cookies.txt",
+                    'outtmpl': currentDirectory + "\\YouTube Music\\" + albumArtistFixed[i] + "\\" + albumNameFixed[i] + "\\" + str(trackNumberFixed[i]) + " " + trackNameFixed[i] + ".m4a",
                     'quiet': True,
                     "no_warnings": True
                     }
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     ydl.download('https://music.youtube.com/watch?v=' + trackVideoId[i])
-                tags = MP4("\\\\?\\" + currentDirectory + "\\YouTube Music\\" + albumArtistFixed[i] + "\\" + albumNameFixed[i] + "\\" + str(trackNumberFixed[i]) + " " + trackNameFixed[i] + ".m4a").tags
+                tags = MP4(currentDirectory + "\\YouTube Music\\" + albumArtistFixed[i] + "\\" + albumNameFixed[i] + "\\" + str(trackNumberFixed[i]) + " " + trackNameFixed[i] + ".m4a").tags
                 tags['\xa9nam'] = trackName[i]
                 tags['\xa9alb'] = albumName[i]
                 tags['aART'] = albumArtist[i]
@@ -263,13 +267,13 @@ for i in range(len(linkInput)):
                 tags['\xa9ART'] = trackArtist[i]
                 tags['trkn'] = [(trackNumber[i], albumTotalTracks[i])]
                 tags['rtng'] = [trackRating[i]]
-                with open("\\\\?\\" + currentDirectory + "\\Cover.jpg", "rb") as cover:
+                with open(currentDirectory + "\\Cover.jpg", "rb") as cover:
                     tags["covr"] = [
                     MP4Cover(cover.read(), imageformat=MP4Cover.FORMAT_JPEG)
                     ]
                 if trackLyrics[i] != None:
                     tags['\xa9lyr'] = trackLyrics[i]
-                tags.save("\\\\?\\" + currentDirectory + "\\YouTube Music\\" + albumArtistFixed[i] + "\\" + albumNameFixed[i] + "\\" + str(trackNumberFixed[i]) + " " + trackNameFixed[i] + ".m4a")
+                tags.save(currentDirectory + "\\YouTube Music\\" + albumArtistFixed[i] + "\\" + albumNameFixed[i] + "\\" + str(trackNumberFixed[i]) + " " + trackNameFixed[i] + ".m4a")
                 print("Done!")
             except KeyboardInterrupt:
                 break
