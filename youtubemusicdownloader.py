@@ -50,7 +50,7 @@ def albumLinkCheck(link):
                 trackName.append(playlistInfo["tracks"][i]["title"])
             except:
                 pass
-        if albumBrowseId == []:
+        if not albumBrowseId:
             return [False]
         return [True, "playlistDownload", albumBrowseId, trackId, trackArtist]
     return [False]
