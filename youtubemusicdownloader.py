@@ -42,6 +42,7 @@ def albumLinkCheck(link):
         albumBrowseId = []
         trackId = []
         trackArtist = []
+        trackName = []
         for i in range(playlistInfo["trackCount"]):
             try:
                 albumBrowseId.append(playlistInfo["tracks"][i]["album"]["id"])
@@ -52,7 +53,7 @@ def albumLinkCheck(link):
                 pass
         if albumBrowseId == []:
             return [False]
-        return [True, "playlistDownload", albumBrowseId, trackId, trackArtist]
+        return [True, "playlistDownload", albumBrowseId, trackId, trackArtist, trackName]
     return [False]
 
 for i in range(len(linkInput)):
@@ -174,6 +175,8 @@ for i in range(len(linkInput)):
                 albumCoverUrl.append(albumInfo[i]["thumbnails"][0]["url"].replace("w60-h60", "w1200-h1200"))
                 trackVideoId.append(downloadDetails[3][i])
                 trackArtist.append(downloadDetails[4][i])
+                trackName.append(downloadDetails[5][i])
+                trackNameFixed.append(downloadDetails[5][i])
                 ydl_opts = {
                 "extract_flat": True,
                 "skip_download": True,
@@ -184,8 +187,6 @@ for i in range(len(linkInput)):
                     albumPlaylistDetails.append(ydl.extract_info("https://music.youtube.com/playlist?list=" + albumInfo[i]["audioPlaylistId"], download=False))
                 for j in range(len(albumPlaylistDetails[i]["entries"])):
                     if albumPlaylistDetails[i]["entries"][j]["id"] == trackVideoId[i]:
-                        trackName.append(albumPlaylistDetails[i]["entries"][j]["title"])
-                        trackNameFixed.append(albumPlaylistDetails[i]["entries"][j]["title"])
                         trackNumber.append(j + 1)
                         trackNumberFixed.append("%02d" % (j + 1))
                         if albumInfo[i]["tracks"][j]["isExplicit"] == True:
