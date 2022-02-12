@@ -162,10 +162,11 @@ for a in range(len(trackVideoId)):
         if trackLyrics != None:
             tags['\xa9lyr'] = trackLyrics
         tags.save(downloadDirectory + trackNumberFixed + " " + trackNameFixed + ".m4a")
-        
+
         print("Done!")
     except KeyboardInterrupt:
         exit()
     except:
         print("Failed to download " + "\"" + trackName + "\"" + ".")
+
 exit()
