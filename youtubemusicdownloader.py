@@ -4,7 +4,7 @@ import os
 from ytmusicapi import YTMusic
 import re
 import yt_dlp
-import urllib.request
+from urllib.request import urlopen
 from mutagen.mp4 import MP4, MP4Cover
 
 linkInput = sys.argv
@@ -40,7 +40,6 @@ def linkInputCheck(link):
             return [trackVideoId]
         except:
             return [False]
-        return [False]
 
     if re.search(r"playlist\?list=OLAK5uy_\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S", link) != None:
         albumPlaylistId = re.search(r"playlist\?list=OLAK5uy_\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S", link).group(0)[14:]
@@ -99,7 +98,7 @@ if trackVideoId == []:
     print("No valid link input provided.")
     exit()
 
-# Fetch tags
+# Fetch tags.
 for a in range(len(trackVideoId)):
     print("Fetching tags (Track " + str(a + 1) + " of " + str(len(trackVideoId)) + ")...")
     trackWatchList = ytmusic.get_watch_playlist(trackVideoId[a])
@@ -108,7 +107,7 @@ for a in range(len(trackVideoId)):
     albumYear = albumDetails["year"]
     albumTotalTracks = albumDetails["trackCount"]
     albumArtist = albumDetails["artists"][0]["name"]
-    albumCoverUrl = albumDetails["thumbnails"][0]["url"].replace("w60-h60", "w1200-h1200")
+    albumCover = urlopen(albumDetails["thumbnails"][0]["url"].replace("w60-h60", "w1200-h1200"))
     trackArtist = trackWatchList["tracks"][0]["artists"][0]["name"]
     try:
         trackLyricsId = ytmusic.get_lyrics(trackWatchList["lyrics"])
@@ -128,7 +127,7 @@ for a in range(len(trackVideoId)):
             else:
                 trackRating = 0
 
-    # Remove illegal characters
+    # Remove illegal characters.
     trackNameFixed = trackName
     albumNameFixed = albumName
     albumArtistFixed = albumArtist
@@ -149,8 +148,8 @@ for a in range(len(trackVideoId)):
         ydl_opts = {'format': '141/140', 'cookiefile': "cookies.txt", 'outtmpl': downloadDirectory + trackNumberFixed + " " + trackNameFixed + ".m4a", 'quiet': True,"no_warnings": True}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download('https://music.youtube.com/watch?v=' + trackVideoId[a])
-        if os.path.exists(downloadDirectory + "Cover.jpg") == False:
-            urllib.request.urlretrieve(albumCoverUrl, downloadDirectory + "Cover.jpg")
+
+        # Tag file.
         tags = MP4(downloadDirectory + trackNumberFixed + " " + trackNameFixed + ".m4a").tags
         tags['\xa9nam'] = trackName
         tags['\xa9alb'] = albumName
@@ -159,14 +158,14 @@ for a in range(len(trackVideoId)):
         tags['\xa9ART'] = trackArtist
         tags['trkn'] = [(trackNumber, albumTotalTracks)]
         tags['rtng'] = [trackRating]
-        with open(downloadDirectory + "Cover.jpg", "rb") as cover:
-            tags["covr"] = [MP4Cover(cover.read(), imageformat=MP4Cover.FORMAT_JPEG)]
+        tags["covr"] = [MP4Cover(albumCover.read(), imageformat=MP4Cover.FORMAT_JPEG)]
         if trackLyrics != None:
             tags['\xa9lyr'] = trackLyrics
         tags.save(downloadDirectory + trackNumberFixed + " " + trackNameFixed + ".m4a")
+        
+        print("Done!")
     except KeyboardInterrupt:
         exit()
     except:
         print("Failed to download " + "\"" + trackName + "\"" + ".")
-    print("Done!")
 exit()
