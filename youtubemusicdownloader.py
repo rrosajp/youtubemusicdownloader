@@ -186,7 +186,8 @@ for a in range(len(trackVideoId)):
     except KeyboardInterrupt:
         break
     except:
-        print("Failed to download " + "\"" + trackTags["trackName"] + "\"" + ".")
+        print("Failed to download " + "\"" +
+              trackTags["trackName"] + "\"" + ".")
         pass
 
 exit()
