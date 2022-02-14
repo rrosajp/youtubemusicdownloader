@@ -19,53 +19,46 @@ else:
 
 # Stop if no link inputs are provided.
 if len(linkInput) == 1:
-    print("Please enter at least one link to continue.")
-    exit()
+    exit("Please enter at least one link to continue.")
 
 del linkInput[0]
 
 ytmusic = YTMusic()
 
 # Link input check.
+
+
 def linkInputCheck(link):
-
     if re.search(r"watch\?v=\S\S\S\S\S\S\S\S\S\S\S", link) != None:
-        trackVideoId = re.search(r"watch\?v=\S\S\S\S\S\S\S\S\S\S\S", link).group(0)[8:]
-        try:
-            trackDetails = ytmusic.get_watch_playlist(trackVideoId)
-            trackVideoDetails = ytmusic.get_song(trackVideoId)
-            trackDetails["tracks"][0]["album"]["id"]
-            if trackVideoDetails["playabilityStatus"]["status"] == "UNPLAYABLE":
-                return [False]
-            return [trackVideoId]
-        except:
-            return [False]
-
+        trackVideoId = re.search(
+            r"watch\?v=\S\S\S\S\S\S\S\S\S\S\S", link).group(0)[8:]
+        trackDetails = ytmusic.get_watch_playlist(trackVideoId)
+        trackVideoDetails = ytmusic.get_song(trackVideoId)
+        trackDetails["tracks"][0]["album"]["id"]
+        trackVideoDetails["streamingData"]
+        return [trackVideoId]
     if re.search(r"playlist\?list=OLAK5uy_\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S", link) != None:
-        albumPlaylistId = re.search(r"playlist\?list=OLAK5uy_\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S", link).group(0)[14:]
+        albumPlaylistId = re.search(
+            r"playlist\?list=OLAK5uy_\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S", link).group(0)[14:]
         albumBrowseId = ytmusic.get_album_browse_id(albumPlaylistId)
-        if albumBrowseId != None:
-            albumDetails = ytmusic.get_album(albumBrowseId)
-            ydl_opts = {"extract_flat": True, "skip_download": True, "quiet": True, "no_warnings": True}
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                albumPlaylistDetails = ydl.extract_info("https://music.youtube.com/playlist?list=" + albumPlaylistId, download=False)
-            trackVideoId = []
-            for a in range(len(albumPlaylistDetails["entries"])):
-                if albumDetails["tracks"][a]["videoId"] == None:
-                    pass
-                else:
-                    trackVideoId.append(albumPlaylistDetails["entries"][a]["id"])
-            if trackVideoId == []:
-                return [False]
-            return trackVideoId
-        return [False]
-
+        albumDetails = ytmusic.get_album(albumBrowseId)
+        ydl_opts = {"extract_flat": True, "skip_download": True,
+                    "quiet": True, "no_warnings": True}
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            albumPlaylistDetails = ydl.extract_info(
+                "https://music.youtube.com/playlist?list=" + albumPlaylistId, download=False)
+        trackVideoId = []
+        for a in range(len(albumPlaylistDetails["entries"])):
+            if albumDetails["tracks"][a]["videoId"] == None:
+                pass
+            else:
+                trackVideoId.append(albumPlaylistDetails["entries"][a]["id"])
+        trackVideoId[0]
+        return trackVideoId
     if re.search(r"playlist\?list=\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S", link) != None:
-        playlistId = re.search(r"playlist\?list=\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S", link).group(0)[14:]
-        try:
-            playlistDetails = ytmusic.get_playlist(playlistId)
-        except:
-            return [False]
+        playlistId = re.search(
+            r"playlist\?list=\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S", link).group(0)[14:]
+        playlistDetails = ytmusic.get_playlist(playlistId)
         trackVideoId = []
         for a in range(playlistDetails["trackCount"]):
             try:
@@ -73,100 +66,121 @@ def linkInputCheck(link):
                 if playlistDetails["tracks"][a]["videoId"] == None:
                     pass
                 else:
-                    trackVideoId.append(playlistDetails["tracks"][a]["videoId"])
+                    trackVideoId.append(
+                        playlistDetails["tracks"][a]["videoId"])
             except:
                 pass
-        if trackVideoId == []:
-            return [False]
+        trackVideoId[0]
         return trackVideoId
-    return [False]
+    raise
 
-# Start checking.
-trackVideoIdWithFalseResults = []
-print("Checking link input...")
-for a in range(len(linkInput)):
-    trackVideoIdWithFalseResults += (linkInputCheck(linkInput[a]))
+# Fetch trackTags.
 
-# Remove falses.
-trackVideoId = []
-for a in range(len(trackVideoIdWithFalseResults)):
-    if trackVideoIdWithFalseResults[a] != False:
-        trackVideoId.append(trackVideoIdWithFalseResults[a])
 
-# Stop if all link inputs are invalid.
-if trackVideoId == []:
-    print("No valid link input provided.")
-    exit()
-
-# Fetch tags.
-for a in range(len(trackVideoId)):
-    print("Fetching tags (Track " + str(a + 1) + " of " + str(len(trackVideoId)) + ")...")
-    trackWatchList = ytmusic.get_watch_playlist(trackVideoId[a])
-    albumDetails = ytmusic.get_album(trackWatchList["tracks"][0]["album"]["id"])
-    albumName = albumDetails["title"]
-    albumYear = albumDetails["year"]
-    albumTotalTracks = albumDetails["trackCount"]
-    albumArtist = albumDetails["artists"][0]["name"]
-    albumCover = urlopen(albumDetails["thumbnails"][0]["url"].replace("w60-h60", "w1200-h1200"))
+def fetchTags(trackVideoId):
+    trackWatchList = ytmusic.get_watch_playlist(trackVideoId)
+    trackAlbumDetails = ytmusic.get_album(
+        trackWatchList["tracks"][0]["album"]["id"])
+    trackAlbumName = trackAlbumDetails["title"]
+    trackAlbumYear = trackAlbumDetails["year"]
+    trackAlbumTotalTracks = trackAlbumDetails["trackCount"]
+    trackAlbumArtist = trackAlbumDetails["artists"][0]["name"]
+    trackAlbumCover = urlopen(
+        trackAlbumDetails["thumbnails"][0]["url"].replace("w60-h60", "w1200-h1200"))
     trackArtist = trackWatchList["tracks"][0]["artists"][0]["name"]
     try:
         trackLyricsId = ytmusic.get_lyrics(trackWatchList["lyrics"])
         trackLyrics = trackLyricsId["lyrics"]
     except:
         trackLyrics = None
-    ydl_opts = {"extract_flat": True, "skip_download": True, "quiet": True, "no_warnings": True}
+    ydl_opts = {"extract_flat": True, "skip_download": True,
+                "quiet": True, "no_warnings": True}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        albumPlaylistDetails = ydl.extract_info("https://music.youtube.com/playlist?list=" + albumDetails["audioPlaylistId"], download=False)
-    for b in range(len(albumPlaylistDetails["entries"])):
-        if albumPlaylistDetails["entries"][b]["id"] == trackVideoId[a]:
-            trackNumber = 1 + b
-            trackNumberFixed = "%02d" % (1 + b)
-            trackName = albumDetails["tracks"][b]["title"]
-            if albumDetails["tracks"][b]["isExplicit"] == True:
+        trackAlbumPlaylistDetails = ydl.extract_info(
+            "https://music.youtube.com/playlist?list=" + trackAlbumDetails["audioPlaylistId"], download=False)
+    for a in range(len(trackAlbumPlaylistDetails["entries"])):
+        if trackAlbumPlaylistDetails["entries"][a]["id"] == trackVideoId:
+            trackNumber = 1 + a
+            trackNumberFixed = "%02d" % (1 + a)
+            trackName = trackAlbumDetails["tracks"][a]["title"]
+            if trackAlbumDetails["tracks"][a]["isExplicit"] == True:
                 trackRating = 4
             else:
                 trackRating = 0
-
-    # Remove illegal characters.
     trackNameFixed = trackName
-    albumNameFixed = albumName
-    albumArtistFixed = albumArtist
+    trackAlbumNameFixed = trackAlbumName
+    trackAlbumArtistFixed = trackAlbumArtist
     illegalCharacters = ["\\", "/", ":", "*", "?", "\"", "<", ">", "|"]
-    for c in range(len(illegalCharacters)):
-        trackNameFixed = trackNameFixed.replace(illegalCharacters[c], "_")
-        albumNameFixed = albumNameFixed.replace(illegalCharacters[c], "_")
-        albumArtistFixed = albumArtistFixed.replace(illegalCharacters[c], "_")
-    if albumNameFixed.endswith(".") == True:
-        albumNameFixed = albumNameFixed.replace(".", "_")
-    if albumArtistFixed.endswith(".") == True:
-        albumArtistFixed = albumArtistFixed.replace(".", "_")
+    for a in range(len(illegalCharacters)):
+        trackNameFixed = trackNameFixed.replace(illegalCharacters[a], "_")
+        trackAlbumNameFixed = trackAlbumNameFixed.replace(
+            illegalCharacters[a], "_")
+        trackAlbumArtistFixed = trackAlbumArtistFixed.replace(
+            illegalCharacters[a], "_")
+    if trackAlbumNameFixed.endswith(".") == True:
+        trackAlbumNameFixed = trackAlbumNameFixed.replace(".", "_")
+    if trackAlbumArtistFixed.endswith(".") == True:
+        trackAlbumArtistFixed = trackAlbumArtistFixed.replace(".", "_")
+    return {"trackVideoId": trackVideoId, "trackAlbumName": trackAlbumName, "trackAlbumYear": trackAlbumYear, "trackAlbumTotalTracks": trackAlbumTotalTracks,
+            "trackAlbumArtist": trackAlbumArtist, "trackAlbumCover": trackAlbumCover, "trackArtist": trackArtist, "trackLyrics": trackLyrics, "trackNumber": trackNumber, "trackNumberFixed": trackNumberFixed,
+            "trackName": trackName, "trackRating": trackRating, "trackNameFixed": trackNameFixed, "trackAlbumNameFixed": trackAlbumNameFixed, "trackAlbumArtistFixed": trackAlbumArtistFixed}
 
-    # Start downloading.
-    print("Downloading " + "\"" + trackName + "\"" + "...")
+# Download tracks.
+
+
+def download(trackTags):
+    ydl_opts = {'format': '141/140',
+                'cookiefile': "cookies.txt",
+                'outtmpl': currentDirectory + slash + "YouTube Music" + slash + trackTags["trackAlbumArtistFixed"] + slash + trackTags["trackAlbumNameFixed"] + slash + trackTags["trackNumberFixed"] + " " + trackTags["trackNameFixed"] + ".m4a", 'quiet': True, "no_warnings": True}
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download('https://music.youtube.com/watch?v=' +
+                     trackTags["trackVideoId"])
+
+# Tag files.
+
+
+def applyTags(trackTags):
+    file = MP4(currentDirectory + slash + "YouTube Music" + slash +
+               trackTags["trackAlbumArtistFixed"] + slash + trackTags["trackAlbumNameFixed"] + slash + trackTags["trackNumberFixed"] + " " + trackTags["trackNameFixed"] + ".m4a").tags
+    file['\xa9nam'] = trackTags["trackName"]
+    file['\xa9alb'] = trackTags["trackAlbumName"]
+    file['aART'] = trackTags["trackAlbumArtist"]
+    file['\xa9day'] = trackTags["trackAlbumYear"]
+    file['\xa9ART'] = trackTags["trackArtist"]
+    file['trkn'] = [
+        (trackTags["trackNumber"], trackTags["trackAlbumTotalTracks"])]
+    file['rtng'] = [trackTags["trackRating"]]
+    file["covr"] = [
+        MP4Cover(trackTags["trackAlbumCover"].read(), imageformat=MP4Cover.FORMAT_JPEG)]
+    if trackTags["trackLyrics"] != None:
+        file['\xa9lyr'] = trackTags["trackLyrics"]
+    file.save(currentDirectory + slash + "YouTube Music" + slash +
+              trackTags["trackAlbumArtistFixed"] + slash + trackTags["trackAlbumNameFixed"] + slash + trackTags["trackNumberFixed"] + " " + trackTags["trackNameFixed"] + ".m4a")
+
+
+# Check input.
+trackVideoId = []
+print("Checking link input...")
+for a in range(len(linkInput)):
     try:
-        downloadDirectory = currentDirectory + slash + "YouTube Music" + slash + albumArtistFixed + slash + albumNameFixed + slash
-        ydl_opts = {'format': '141/140', 'cookiefile': "cookies.txt", 'outtmpl': downloadDirectory + trackNumberFixed + " " + trackNameFixed + ".m4a", 'quiet': True,"no_warnings": True}
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download('https://music.youtube.com/watch?v=' + trackVideoId[a])
-
-        # Tag file.
-        tags = MP4(downloadDirectory + trackNumberFixed + " " + trackNameFixed + ".m4a").tags
-        tags['\xa9nam'] = trackName
-        tags['\xa9alb'] = albumName
-        tags['aART'] = albumArtist
-        tags['\xa9day'] = albumYear
-        tags['\xa9ART'] = trackArtist
-        tags['trkn'] = [(trackNumber, albumTotalTracks)]
-        tags['rtng'] = [trackRating]
-        tags["covr"] = [MP4Cover(albumCover.read(), imageformat=MP4Cover.FORMAT_JPEG)]
-        if trackLyrics != None:
-            tags['\xa9lyr'] = trackLyrics
-        tags.save(downloadDirectory + trackNumberFixed + " " + trackNameFixed + ".m4a")
-
-        print("Done!")
+        trackVideoId += (linkInputCheck(linkInput[a]))
     except KeyboardInterrupt:
         exit()
     except:
-        print("Failed to download " + "\"" + trackName + "\"" + ".")
+        pass
+try:
+    trackVideoId[0]
+except:
+    exit("No valid link input provided.")
+
+# Start downloading.
+for a in range(len(trackVideoId)):
+    print("Fetching tags (Track " + str(a + 1) +
+          " of " + str(len(trackVideoId)) + ")...")
+    trackTags = fetchTags(trackVideoId[a])
+    print("Downloading " + "\"" + trackTags["trackName"] + "\"" + "...")
+    download(trackTags)
+    applyTags(trackTags)
+    print("Done!")
 
 exit()
