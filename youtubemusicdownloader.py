@@ -175,12 +175,18 @@ except:
 
 # Start downloading.
 for a in range(len(trackVideoId)):
-    print("Fetching tags (Track " + str(a + 1) +
-          " of " + str(len(trackVideoId)) + ")...")
-    trackTags = fetchTags(trackVideoId[a])
-    print("Downloading " + "\"" + trackTags["trackName"] + "\"" + "...")
-    download(trackTags)
-    applyTags(trackTags)
-    print("Done!")
+    try:
+        print("Fetching tags (Track " + str(a + 1) +
+              " of " + str(len(trackVideoId)) + ")...")
+        trackTags = fetchTags(trackVideoId[a])
+        print("Downloading " + "\"" + trackTags["trackName"] + "\"" + "...")
+        download(trackTags)
+        applyTags(trackTags)
+        print("Done!")
+    except KeyboardInterrupt:
+        break
+    except:
+        print("Failed to download " + "\"" + trackTags["trackName"] + "\"" + ".")
+        pass
 
 exit()
