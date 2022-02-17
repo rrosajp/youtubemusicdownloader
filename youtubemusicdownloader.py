@@ -72,7 +72,7 @@ def linkInputCheck(link):
 
 def getDownloadOptions():
     if linkInput[-1] == "opus":
-        return {"format": "251", "extension": ".webm"}
+        return {"format": "251", "extension": ".opus"}
     else:
         return {"format": "141/140", "extension": ".m4a"}
 
@@ -160,16 +160,13 @@ def download(downloadOptions, downloadDirectory):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download("https://music.youtube.com/watch?v=" +
                      trackTags["trackVideoId"])
-    if downloadOptions["format"] == "251":
-        os.rename(downloadDirectory[:-4] + "opus",
-                  downloadDirectory[:-4] + "ogg",)
 
 # Tag files.
 
 
 def applyTags(downloadOptions, downloadDirectory, trackTags):
     if downloadOptions["format"] == "251":
-        tags = music_tag.load_file(downloadDirectory[:-4] + "ogg")
+        tags = music_tag.load_file(downloadDirectory)
         tags["album"] = trackTags["trackAlbumName"]
         tags["albumartist"] = trackTags["trackAlbumArtist"]
         tags["artist"] = trackTags["trackArtist"]
