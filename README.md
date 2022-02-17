@@ -5,7 +5,7 @@ You can also download tracks in Opus codec by typing "opus" on the last argument
 Tags (album artist, album cover, album name, album track count, album year, track artist, track lyrics, track name, track number, track rating) are fetched from YouTube Music itself.
 
 ### Requirements
-    pip install yt_dlp mutagen ytmusicapi
+    pip install -r requirements.txt
 You will also need ffmpeg installed in your system.
 
 ### Usage
