@@ -1,0 +1,4 @@
+music-tag
+ytmusicapi
+yt-dlp
+Pillow

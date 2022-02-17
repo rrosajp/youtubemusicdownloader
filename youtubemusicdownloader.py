@@ -1,29 +1,22 @@
 import sys
-import platform
-import os
 from ytmusicapi import YTMusic
 import re
 import yt_dlp
-from urllib.request import urlopen
+import platform
+import os
+import requests
+import music_tag
 from mutagen.mp4 import MP4, MP4Cover
 
 linkInput = sys.argv
 
-# Get current directory.
-if platform.system() == "Windows":
-    currentDirectory = "\\\\?\\" + os.getcwd()
-    slash = "\\"
-else:
-    currentDirectory = os.getcwd()
-    slash = "/"
+ytmusic = YTMusic()
 
 # Stop if no link inputs are provided.
 if len(linkInput) == 1:
     exit("Please enter at least one link to continue.")
 
 del linkInput[0]
-
-ytmusic = YTMusic()
 
 # Link input check.
 
@@ -74,6 +67,15 @@ def linkInputCheck(link):
         return trackVideoId
     raise
 
+# Get download options:
+
+
+def getDownloadOptions():
+    if linkInput[-1] == "opus":
+        return {"format": "251", "extension": ".webm"}
+    else:
+        return {"format": "141/140", "extension": ".m4a"}
+
 # Fetch trackTags.
 
 
@@ -85,8 +87,8 @@ def fetchTags(trackVideoId):
     trackAlbumYear = trackAlbumDetails["year"]
     trackAlbumTotalTracks = trackAlbumDetails["trackCount"]
     trackAlbumArtist = trackAlbumDetails["artists"][0]["name"]
-    trackAlbumCover = urlopen(
-        trackAlbumDetails["thumbnails"][0]["url"].replace("w60-h60", "w1200-h1200"))
+    trackAlbumCover = requests.get(
+        trackAlbumDetails["thumbnails"][0]["url"].replace("w60-h60", "w1200-h1200")).content
     trackArtist = trackWatchList["tracks"][0]["artists"][0]["name"]
     try:
         trackLyricsId = ytmusic.get_lyrics(trackWatchList["lyrics"])
@@ -125,37 +127,75 @@ def fetchTags(trackVideoId):
             "trackAlbumArtist": trackAlbumArtist, "trackAlbumCover": trackAlbumCover, "trackArtist": trackArtist, "trackLyrics": trackLyrics, "trackNumber": trackNumber, "trackNumberFixed": trackNumberFixed,
             "trackName": trackName, "trackRating": trackRating, "trackNameFixed": trackNameFixed, "trackAlbumNameFixed": trackAlbumNameFixed, "trackAlbumArtistFixed": trackAlbumArtistFixed}
 
+# Get output template.
+
+
+def getDownloadDirectory(trackTags, downloadOptions):
+    if platform.system() == "Windows":
+        currentDirectory = "\\\\?\\" + os.getcwd()
+        slash = "\\"
+    else:
+        currentDirectory = os.getcwd()
+        slash = "/"
+    downloadDirectory = currentDirectory + slash + "YouTube Music" + slash + \
+        trackTags["trackAlbumArtistFixed"] + slash + trackTags["trackAlbumNameFixed"] + slash + \
+        trackTags["trackNumberFixed"] + " " + \
+        trackTags["trackNameFixed"] + downloadOptions["extension"]
+    return downloadDirectory
+
+
 # Download tracks.
 
 
-def download(trackTags):
-    ydl_opts = {'format': '141/140',
-                'cookiefile': "cookies.txt",
-                'outtmpl': currentDirectory + slash + "YouTube Music" + slash + trackTags["trackAlbumArtistFixed"] + slash + trackTags["trackAlbumNameFixed"] + slash + trackTags["trackNumberFixed"] + " " + trackTags["trackNameFixed"] + ".m4a", 'quiet': True, "no_warnings": True}
+def download(downloadOptions, downloadDirectory):
+    ydl_opts = {"format": downloadOptions["format"],
+                "cookiefile": "cookies.txt",
+                "outtmpl": downloadDirectory,
+                "quiet": True,
+                "no_warnings": True}
+    if downloadOptions["format"] == "251":
+        ydl_opts["postprocessors"] = [{
+            'key': 'FFmpegExtractAudio',
+        }]
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download('https://music.youtube.com/watch?v=' +
+        ydl.download("https://music.youtube.com/watch?v=" +
                      trackTags["trackVideoId"])
+    if downloadOptions["format"] == "251":
+        os.rename(downloadDirectory[:-4] + "opus",
+                  downloadDirectory[:-4] + "ogg",)
 
 # Tag files.
 
 
-def applyTags(trackTags):
-    file = MP4(currentDirectory + slash + "YouTube Music" + slash +
-               trackTags["trackAlbumArtistFixed"] + slash + trackTags["trackAlbumNameFixed"] + slash + trackTags["trackNumberFixed"] + " " + trackTags["trackNameFixed"] + ".m4a").tags
-    file['\xa9nam'] = trackTags["trackName"]
-    file['\xa9alb'] = trackTags["trackAlbumName"]
-    file['aART'] = trackTags["trackAlbumArtist"]
-    file['\xa9day'] = trackTags["trackAlbumYear"]
-    file['\xa9ART'] = trackTags["trackArtist"]
-    file['trkn'] = [
-        (trackTags["trackNumber"], trackTags["trackAlbumTotalTracks"])]
-    file['rtng'] = [trackTags["trackRating"]]
-    file["covr"] = [
-        MP4Cover(trackTags["trackAlbumCover"].read(), imageformat=MP4Cover.FORMAT_JPEG)]
-    if trackTags["trackLyrics"] != None:
-        file['\xa9lyr'] = trackTags["trackLyrics"]
-    file.save(currentDirectory + slash + "YouTube Music" + slash +
-              trackTags["trackAlbumArtistFixed"] + slash + trackTags["trackAlbumNameFixed"] + slash + trackTags["trackNumberFixed"] + " " + trackTags["trackNameFixed"] + ".m4a")
+def applyTags(downloadOptions, downloadDirectory, trackTags):
+    if downloadOptions["format"] == "251":
+        tags = music_tag.load_file(downloadDirectory[:-4] + "ogg")
+        tags["album"] = trackTags["trackAlbumName"]
+        tags["albumartist"] = trackTags["trackAlbumArtist"]
+        tags["artist"] = trackTags["trackArtist"]
+        tags["artwork"] = trackTags["trackAlbumCover"]
+        if trackTags["trackLyrics"] != None:
+            tags["lyrics"] = trackTags["trackLyrics"]
+        tags["totaltracks"] = trackTags["trackAlbumTotalTracks"]
+        tags["tracknumber"] = trackTags["trackNumber"]
+        tags["tracktitle"] = trackTags["trackName"]
+        tags["year"] = trackTags["trackAlbumYear"]
+        tags.save()
+    else:
+        tags = MP4(downloadDirectory).tags
+        tags["\xa9nam"] = trackTags["trackName"]
+        tags["\xa9alb"] = trackTags["trackAlbumName"]
+        tags["aART"] = trackTags["trackAlbumArtist"]
+        tags["\xa9day"] = trackTags["trackAlbumYear"]
+        tags["\xa9ART"] = trackTags["trackArtist"]
+        tags["trkn"] = [
+            (trackTags["trackNumber"], trackTags["trackAlbumTotalTracks"])]
+        tags["rtng"] = [trackTags["trackRating"]]
+        tags["covr"] = [
+            MP4Cover(trackTags["trackAlbumCover"], imageformat=MP4Cover.FORMAT_JPEG)]
+        if trackTags["trackLyrics"] != None:
+            tags["\xa9lyr"] = trackTags["trackLyrics"]
+        tags.save(downloadDirectory)
 
 
 # Check input.
@@ -174,20 +214,22 @@ except:
     exit("No valid link input provided.")
 
 # Start downloading.
+downloadOptions = getDownloadOptions()
 for a in range(len(trackVideoId)):
     try:
         print("Fetching tags (Track " + str(a + 1) +
               " of " + str(len(trackVideoId)) + ")...")
         trackTags = fetchTags(trackVideoId[a])
+        downloadDirectory = getDownloadDirectory(trackTags, downloadOptions)
         print("Downloading " + "\"" + trackTags["trackName"] + "\"" + "...")
-        download(trackTags)
-        applyTags(trackTags)
+        download(downloadOptions, downloadDirectory)
+        applyTags(downloadOptions, downloadDirectory, trackTags)
         print("Done!")
     except KeyboardInterrupt:
         break
     except:
-        print("Failed to download " + "\"" +
-              trackTags["trackName"] + "\"" + ".")
+        print("Failed to download (Track " + str(a + 1) +
+              " of " + str(len(trackVideoId)) + ").")
         pass
 
 exit()
