@@ -15,10 +15,10 @@ parser = argparse.ArgumentParser(description="Download YouTube Music tracks.")
 parser.add_argument("url", action="append",
                     help="Any valid YouTube Music album/playlist/track URL.", nargs="+")
 parser.add_argument("--o", "--opus", action="store_true",
-                    help="Set track download format to Opus codec. Default is AAC.")
+                    help="Set track download format to Opus (251). Default is AAC (141/140).")
 parser.add_argument("--c", "--coverresolution",
                     help="\"max\" or any valid number. Default is \"1200\".")
-parser.add_argument("--e", "--excludetags", help="Tags (\"album\", \"albumartist\", \"artist\", \"artwork\", \"lyrics\", \"rating\", \"totaltracks\", \"tracknumber\", \"tracktitle\" and \"year\") separated by comma without space.",  nargs=1)
+parser.add_argument("--e", "--excludetags", help="Any valid tag (\"album\", \"albumartist\", \"artist\", \"artwork\", \"lyrics\", \"rating\", \"totaltracks\", \"tracknumber\", \"tracktitle\" and \"year\") separated by comma with no space.",  nargs=1)
 parser.add_argument("--s", "--savecover", action="store_true",
                     help="Save track album cover as \"Cover.jpg\" in track download directory.")
 parser.add_argument("--n", "--nodirectorystructure", action="store_true",
