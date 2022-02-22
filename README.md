@@ -14,12 +14,12 @@ You will also need ffmpeg installed in your system.
 
     options:
       -h, --help            show this help message and exit
-      --o, --opus           Set track download format to Opus codec. Default is AAC.
+      --o, --opus           Set track download format to Opus (251). Default is AAC (141/140).
       --c C, --coverresolution C
                             "max" or any valid number. Default is "1200".
       --e E, --excludetags E
-                            Tags ("album", "albumartist", "artist", "artwork", "lyrics", "rating", "totaltracks", "tracknumber", "tracktitle" and "year") separated by comma     
-                            without space.
+                            Any valid tag ("album", "albumartist", "artist", "artwork", "lyrics", "rating", "totaltracks", "tracknumber", "tracktitle" and "year") separated by comma     
+                            and without space.
       --s, --savecover      Save track album cover as "Cover.jpg" in track download directory.
       --n, --nodirectorystructure
                             Set track download directory to "/YouTube Music/Artist - Song.m4a/.opus".
