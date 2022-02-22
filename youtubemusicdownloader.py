@@ -192,9 +192,11 @@ def download(download_preferences, track_tags):
         ydl.download("https://music.youtube.com/watch?v=" +
                      track_tags["trackVideoId"])
     if download_preferences["downloadFormat"] == "251":
-        subprocess.check_output("ffmpeg -i \"" + download_preferences["trackDownloadDirectory"] + "\" -f opus -c copy \"" + download_preferences["trackDownloadDirectory"] + ".temp\"")
+        subprocess.check_output("ffmpeg -i \"" + download_preferences["trackDownloadDirectory"] +
+                                "\" -f opus -c copy \"" + download_preferences["trackDownloadDirectory"] + ".temp\"")
         os.remove(download_preferences["trackDownloadDirectory"])
-        os.rename(download_preferences["trackDownloadDirectory"] + ".temp", download_preferences["trackDownloadDirectory"])
+        os.rename(download_preferences["trackDownloadDirectory"] +
+                  ".temp", download_preferences["trackDownloadDirectory"])
 
 # Apply tags.
 
