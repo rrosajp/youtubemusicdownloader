@@ -22,6 +22,6 @@ You will also need ffmpeg installed in your system.
                             and without space.
       --s, --savecover      Save track album cover as "Cover.jpg" in track download directory.
       --n, --nodirectorystructure
-                            Set track download directory to "/YouTube Music/Artist - Song.m4a/.opus".
+                            Set track download directory to "/YouTube Music/Track Artist - Track Name.m4a/.opus".
 
 Special thanks to Patrick Timm for helping me out in this project.
