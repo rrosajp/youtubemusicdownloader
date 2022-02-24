@@ -96,8 +96,8 @@ def fetch_tags(track_video_id, cover_resolution):
     track_album_name_fixed = track_album_name
     track_album_total_tracks = track_album_details["trackCount"]
     track_album_year = track_album_details["year"]
-    track_artist = track_album_details["artists"][0]["name"]
-    track_artist_fixed = track_album_details["artists"][0]["name"]
+    track_artist = track_details["tracks"][0]["artists"][0]["name"]
+    track_artist_fixed = track_artist
     try:
         track_lyrics_id = ytmusic.get_lyrics(track_details["lyrics"])
         track_lyrics = track_lyrics_id["lyrics"]
