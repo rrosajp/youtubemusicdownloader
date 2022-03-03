@@ -19,7 +19,7 @@ You will also need ffmpeg installed in your system.
                             "max" or any valid number. Default is "1200".
       --e E, --excludetags E
                             Any valid tag ("album", "albumartist", "artist", "artwork", "lyrics", "rating", "totaltracks", "tracknumber", "tracktitle" and "year") separated by comma     
-                            and without space.
+                            with no spaces
       --s, --savecover      Save track album cover as "Cover.jpg" in track download directory.
 
 Special thanks to Patrick Timm for helping me out in this project.
