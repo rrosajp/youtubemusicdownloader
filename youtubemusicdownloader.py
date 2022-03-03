@@ -3,6 +3,7 @@ import argparse
 import re
 import yt_dlp
 import requests
+from io import StringIO
 import platform
 import os
 import music_tag
@@ -113,12 +114,22 @@ def url_check(url):
     raise
 
 
-# Fetch tags.
+# Fetch tags.c
 def fetch_tags(track_video_id, cover_resolution):
     illegal_characters = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"]
     track_details = ytmusic.get_watch_playlist(track_video_id)
     track_album_details = ytmusic.get_album(track_details["tracks"][0]["album"]["id"])
-    track_album_artist = track_album_details["artists"][0]["name"]
+    track_album_artist = StringIO()
+    for a in range(len(track_album_details["artists"])):
+        if len(track_album_details["artists"]) == 1:
+            track_album_artist.write(track_album_details["artists"][a]["name"])
+            break
+        if a == len(track_album_details["artists"]) - 2:
+            track_album_artist.write(track_album_details["artists"][a]["name"] + " & " + track_album_details["artists"][a + 1]["name"])
+            break
+        else:
+            track_album_artist.write(track_album_details["artists"][a]["name"] + ", ")
+    track_album_artist = track_album_artist.getvalue()
     track_album_artist_fixed = track_album_artist
     if "w60-h60-s" in track_album_details["thumbnails"][0]["url"]:
         track_album_cover = requests.get(
@@ -136,7 +147,17 @@ def fetch_tags(track_video_id, cover_resolution):
     track_album_name_fixed = track_album_name
     track_album_total_tracks = track_album_details["trackCount"]
     track_album_year = track_album_details["year"]
-    track_artist = track_details["tracks"][0]["artists"][0]["name"]
+    track_artist = StringIO()
+    for a in range(len(track_details["tracks"][0]["artists"])):
+        if len(track_details["tracks"][0]["artists"]) == 1:
+            track_artist.write(track_details["tracks"][0]["artists"][a]["name"])
+            break
+        if a == len(track_details["tracks"][0]["artists"]) - 2:
+            track_artist.write(track_details["tracks"][0]["artists"][a]["name"] + " & " + track_details["tracks"][0]["artists"][a + 1]["name"])
+            break
+        else:
+            track_artist.write(track_details["tracks"][0]["artists"][a]["name"] + ", ")
+    track_artist = track_artist.getvalue()
     track_artist_fixed = track_artist
     try:
         track_lyrics_id = ytmusic.get_lyrics(track_details["lyrics"])
