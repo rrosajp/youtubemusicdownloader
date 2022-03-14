@@ -1,4 +1,4 @@
-# YouTube Music Downloader
+# Glomatico's YouTube Music Downloader
 A simple Python script to download YouTube Music tacks by providing a link.
 Tags are fetched from YouTube Music itself.
 
