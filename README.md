@@ -1,25 +1,25 @@
 # YouTube Music Downloader
-A simple Python script to download YouTube Music playlists, albums or tracks by providing a link.
-By default, tracks are downloaded in AAC 128k codec (140), but you can get AAC 256k (141) if you place a YouTube Music Premium cookies.txt at the same directory as this script and Opus (251) by using the flag "--o".
-Tags (album artist, album cover, album name, album track count, album year, track artist, track lyrics, track name, track number, track rating) are fetched from YouTube Music itself.
+A simple Python script to download YouTube Music tacks by providing a link.
+Tags are fetched from YouTube Music itself.
 
 ### Requirements
     pip3 install -r requirements.txt
 You will also need ffmpeg installed in your system.
 
 ### Usage
-    python youtubemusicdownloader.py [-h] [--o] [--c C] [--e E] [--s] [--n] url [url ...]
     positional arguments:
-      url                   Any valid YouTube Music album/playlist/track URL.
-
+      url                   Any valid YouTube Music URL.
+    
     options:
       -h, --help            show this help message and exit
-      --o, --opus           Set track download format to Opus (251). Default is AAC (141/140).
-      --c C, --coverresolution C
-                            "max" or any valid number. Default is "1200".
+      --f F, --format F     141 (AAC 256kbps), 251 (Opus 160kbps) or 140 (AAC 128kbps). Requires a valid cookie file for
+                            141. Default is 140.
       --e E, --excludetags E
-                            Any valid tag ("album", "albumartist", "artist", "artwork", "lyrics", "rating", "totaltracks", "tracknumber", "tracktitle" and "year") separated by comma     
-                            with no spaces
-      --s, --savecover      Save track album cover as "Cover.jpg" in track download directory.
+                            Any valid tag ("album", "albumartist", "artist", "artwork", "lyrics", "rating", "totaltracks",
+                            "tracknumber", "tracktitle" and "year") separated by comma with no spaces.
+      --d, --downloadartwork
+                            Download artwork as "Cover.jpg" in download directory.
+      --a A, --artworksize A
+                            "max" or any valid number. Default is "1200".
 
 Special thanks to Patrick Timm for helping me out in this project.
