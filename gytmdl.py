@@ -106,13 +106,20 @@ def get_tags(video_id, artwork_size):
     if len(album_details['artists']) == 1:
         album_artist = album_details['artists'][0]['name']
     else:
-        album_artist = album_details['artists'][0]['name'] + ' & ' + album_details['artists'][1]['name']
+        album_artist_temp = []
+        for a in range(len(album_details['artists'])):
+            album_artist_temp.append(album_details['artists'][a]['name'])
+        album_artist = ", ".join(album_artist_temp[:-1])
+        album_artist += " & " + album_artist_temp[-1]
     album_artist_fixed = album_artist
     if len(watch_playlist['tracks'][0]['artists']) == 1:
         artist = watch_playlist['tracks'][0]['artists'][0]['name']
     else:
-        artist = watch_playlist['tracks'][0]['artists'][0]['name'] + ' & ' + \
-                 watch_playlist['tracks'][0]['artists'][1]['name']
+        artist_temp = []
+        for a in range(len(watch_playlist['tracks'][0]['artists'])):
+            artist_temp.append(watch_playlist['tracks'][0]['artists'][a]['name'])
+        artist = ", ".join(artist_temp[:-1])
+        artist += " & " + artist_temp[-1]
     artist_fixed = artist
     artwork = requests.get(album_details['thumbnails'][0]['url'].split('=')[0] + '=w' + artwork_size).content
     try:
@@ -314,21 +321,21 @@ def main(url, size, download_format, artwork, exclude_tags_options):
     if not video_id:
         exit('No valid URL entered.')
     for a in range(len(video_id)):
-        print(f'Getting tags (Track {str(a + 1)} of {str(len(video_id))})...')
+        print(f'Getting tags (track {str(a + 1)} of {str(len(video_id))})...')
         try:
             artwork_size = check_artwork_size(size)
             tags = get_tags(video_id[a], artwork_size)
-            print(f'Downloading "{tags["track_title"]}" (Track {str(a + 1)} of {str(len(video_id))})...')
+            print(f'Downloading "{tags["track_title"]}" (track {str(a + 1)} of {str(len(video_id))})...')
             download_options = get_download_options(download_format, tags)
             download(download_options, tags)
             exclude_tags = get_exclude_tags(exclude_tags_options)
             apply_tags(download_options, exclude_tags, tags)
             download_artwork(artwork, download_options, tags)
-            print(f'Download finished "{tags["track_title"]}" (Track {str(a + 1)} of {str(len(video_id))})!')
+            print(f'Download finished (track {str(a + 1)} of {str(len(video_id))})!')
         except KeyboardInterrupt:
             exit()
         except:
-            print(f'* Download failed (Track {str(a + 1)} of {str(len(video_id))}).')
+            print(f'* Download failed (track {str(a + 1)} of {str(len(video_id))}).')
             error_count += 1
             pass
     exit(f'All done. ({error_count} errors.)')
