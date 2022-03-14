@@ -338,7 +338,7 @@ def main(url, size, download_format, artwork, exclude_tags_options):
             print(f'* Download failed (track {str(a + 1)} of {str(len(video_id))}).')
             error_count += 1
             pass
-    exit(f'All done. ({error_count} errors.)')
+    exit(f'All done ({error_count} errors).')
 
 
 main(url, size, download_format, artwork, exclude_tags_options)
