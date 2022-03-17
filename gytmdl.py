@@ -9,7 +9,7 @@ from mutagen.mp4 import MP4, MP4Cover
 
 ytmusic = YTMusic()
 
-parser = argparse.ArgumentParser(description='Download YouTube Music tracks.')
+parser = argparse.ArgumentParser(description='Download YouTube Music tracks with tags from YouTube Music.')
 parser.add_argument(
     'url',
     help='Any valid YouTube Music URL.',
@@ -60,7 +60,6 @@ def get_video_id(url):
             url,
             download=False,
         )
-
     if 'youtube' in url_details['extractor']:
         if 'MPREb' in url_details['webpage_url_basename']:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -68,7 +67,6 @@ def get_video_id(url):
                     url_details['url'],
                     download=False,
                 )
-
         if 'playlist' in url_details['webpage_url_basename']:
             video_id = []
             for a in range(len(url_details['entries'])):
@@ -77,7 +75,6 @@ def get_video_id(url):
                     video_id.append(url_details['entries'][a]['id'])
             if video_id:
                 return video_id
-
         if 'watch' in url_details['webpage_url_basename']:
             video_id_details = ytmusic.get_song(url_details['id'])
             if 'streamingData' in video_id_details:
@@ -98,7 +95,6 @@ def check_artwork_size(artwork_size):
 
 
 def get_tags(video_id, artwork_size):
-    illegal_characters = ['\\', '/', ':', '*', '?', '"', '<', '>', '|']
     watch_playlist = ytmusic.get_watch_playlist(video_id)
     album_details = ytmusic.get_album(watch_playlist['tracks'][0]['album']['id'])
     album = album_details['title']
@@ -154,6 +150,7 @@ def get_tags(video_id, artwork_size):
     track_title = watch_playlist['tracks'][0]['title']
     track_title_fixed = track_title
     year = album_details['year']
+    illegal_characters = ['\\', '/', ':', '*', '?', '"', '<', '>', '|']
     for a in range(len(illegal_characters)):
         album_artist_fixed = album_artist_fixed.replace(illegal_characters[a], '_')
         album_fixed = album_fixed.replace(illegal_characters[a], '_')
@@ -311,31 +308,31 @@ def download_artwork(artwork, download_options, tags):
 
 def main(url, size, download_format, artwork, exclude_tags_options):
     error_count = 0
-    print('Checking URL...')
     video_id = []
     for a in range(len(url)):
         try:
+            print(f'Checking URL ({a + 1} of {len(url)})...')
             video_id += get_video_id(url[a])
         except:
             pass
     if not video_id:
         exit('No valid URL entered.')
     for a in range(len(video_id)):
-        print(f'Getting tags (track {str(a + 1)} of {str(len(video_id))})...')
+        print(f'Getting tags ({str(a + 1)} of {str(len(video_id))})...')
         try:
             artwork_size = check_artwork_size(size)
             tags = get_tags(video_id[a], artwork_size)
-            print(f'Downloading "{tags["track_title"]}" (track {str(a + 1)} of {str(len(video_id))})...')
+            print(f'Downloading "{tags["track_title"]}" ({str(a + 1)} of {str(len(video_id))})...')
             download_options = get_download_options(download_format, tags)
             download(download_options, tags)
             exclude_tags = get_exclude_tags(exclude_tags_options)
             apply_tags(download_options, exclude_tags, tags)
             download_artwork(artwork, download_options, tags)
-            print(f'Download finished (track {str(a + 1)} of {str(len(video_id))})!')
+            print(f'Download finished ({str(a + 1)} of {str(len(video_id))})!')
         except KeyboardInterrupt:
             exit()
         except:
-            print(f'* Download failed (track {str(a + 1)} of {str(len(video_id))}).')
+            print(f'* Download failed ({str(a + 1)} of {str(len(video_id))}).')
             error_count += 1
             pass
     exit(f'All done ({error_count} errors).')
