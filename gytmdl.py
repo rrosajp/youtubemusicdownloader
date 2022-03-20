@@ -9,44 +9,6 @@ from mutagen.mp4 import MP4, MP4Cover
 
 ytmusic = YTMusic()
 
-parser = argparse.ArgumentParser(description='Download YouTube Music tracks with tags from YouTube Music.')
-parser.add_argument(
-    'url',
-    help='Any valid YouTube Music URL.',
-    nargs='+',
-)
-parser.add_argument(
-    "--f",
-    "--format",
-    default='140',
-    help='141 (AAC 256kbps), 251 (Opus 160kbps) or 140 (AAC 128kbps). Requires a valid cookie file for 141. '
-         'Default is 140.',
-)
-parser.add_argument(
-    '--e',
-    '--excludetags',
-    default='',
-    help='Any valid tag ("album", "albumartist", "artist", "artwork", "lyrics", "rating", "totaltracks", "tracknumber",'
-         ' "tracktitle" and "year") separated by comma with no spaces.',
-)
-parser.add_argument(
-    '--d',
-    '--downloadartwork',
-    action='store_true',
-    help='Download artwork as "Cover.jpg" in download directory.',
-)
-parser.add_argument(
-    '--a',
-    '--artworksize',
-    default='1200',
-    help='"max" or any valid number. Default is "1200".'
-)
-args = parser.parse_args()
-url = args.url
-download_format = args.f
-exclude_tags_options = args.e
-artwork = args.d
-size = args.a
 
 def get_video_id(url):
     ydl_opts = {
@@ -313,6 +275,8 @@ def main(url, size, download_format, artwork, exclude_tags_options):
         try:
             print(f'Checking URL ({a + 1} of {len(url)})...')
             video_id += get_video_id(url[a])
+        except KeyboardInterrupt:
+            exit()
         except:
             pass
     if not video_id:
@@ -338,4 +302,43 @@ def main(url, size, download_format, artwork, exclude_tags_options):
     exit(f'All done ({error_count} errors).')
 
 
-main(url, size, download_format, artwork, exclude_tags_options)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Download YouTube Music tracks with tags from YouTube Music.')
+    parser.add_argument(
+        'url',
+        help='Any valid YouTube Music URL.',
+        nargs='+',
+    )
+    parser.add_argument(
+        "--f",
+        "--format",
+        default='140',
+        help='141 (AAC 256kbps), 251 (Opus 160kbps) or 140 (AAC 128kbps). Requires a valid cookie file for 141. '
+             'Default is 140.',
+    )
+    parser.add_argument(
+        '--e',
+        '--excludetags',
+        default='',
+        help='Any valid tag ("album", "albumartist", "artist", "artwork", "lyrics", "rating", "totaltracks", "tracknumber",'
+             ' "tracktitle" and "year") separated by comma with no spaces.',
+    )
+    parser.add_argument(
+        '--d',
+        '--downloadartwork',
+        action='store_true',
+        help='Download artwork as "Cover.jpg" in download directory.',
+    )
+    parser.add_argument(
+        '--a',
+        '--artworksize',
+        default='1200',
+        help='"max" or any valid number. Default is "1200".'
+    )
+    args = parser.parse_args()
+    url = args.url
+    download_format = args.f
+    exclude_tags_options = args.e
+    artwork = args.d
+    size = args.a
+    main(url, size, download_format, artwork, exclude_tags_options)
