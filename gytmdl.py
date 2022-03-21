@@ -32,15 +32,10 @@ def get_video_id(url):
         if 'playlist' in url_details['webpage_url_basename']:
             video_id = []
             for a in range(len(url_details['entries'])):
-                video_id_details = ytmusic.get_song(url_details['entries'][a]['id'])
-                if 'streamingData' in video_id_details:
-                    video_id.append(url_details['entries'][a]['id'])
-            if video_id:
-                return video_id
+                video_id.append(url_details['entries'][a]['id'])
+            return video_id
         if 'watch' in url_details['webpage_url_basename']:
-            video_id_details = ytmusic.get_song(url_details['id'])
-            if 'streamingData' in video_id_details:
-                return [url_details['id']]
+            return [url_details['id']]
 
 
 def check_artwork_size(artwork_size):
